@@ -1,5 +1,4 @@
 import { RequestParams } from "./interface";
-import { ResultType } from "./types";
 import { StatusCall, GenericMessage } from './enum';
 
 
@@ -7,7 +6,13 @@ import { StatusCall, GenericMessage } from './enum';
 parameter and returns a promise. */
 export class Api {
 
-    static async callGlobal(reqParams: RequestParams, succFn?: (res: any) => void): Promise<ResultType> {
+    /**
+     * @param {RequestParams} reqParams - RequestParams
+     * @param [succFn] - (res: any) => void: This is a function that will be called if the request is
+     * successful.
+     * @returns The resultCall variable is being returned.
+     */
+    static async callGlobal(reqParams: RequestParams, succFn?: (res: any) => void): Promise<Response> {
 
 
         /* It's assigning the values of the RequestParams object to the data object. */
@@ -24,12 +29,19 @@ export class Api {
             referrerPolicy: reqParams.referrerPolicy ?? 'same-origin'
         }
 
-        let resultCall:Response = await this.genericFetch(reqParams.url, reqParams.data!, succFn);
+        let resultCall: Response = await this.genericFetch(reqParams.url, reqParams.data!, succFn);
 
         return resultCall;
     }
 
 
+
+    /**
+     * @param {string} url - string - the url to fetch
+     * @param {RequestInit} [data] 
+     * @param [succFn] - (res: any) => void
+     * @returns The resultGeneric.json() is being returned.
+     */
     private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: any) => void): Promise<any> {
 
         let resultGeneric: Response;
@@ -37,7 +49,7 @@ export class Api {
             if (data !== undefined) {
 
                 resultGeneric = await fetch(url, data);
-                
+
                 if (!resultGeneric.ok) {
                     switch (resultGeneric.status) {
                         case undefined:

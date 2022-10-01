@@ -1,6 +1,6 @@
 {
   "name": "beerequest-test",
-  "version": "0.1.1",
+  "version": "0.2.2",
   "description": "A little package for HttpRequest",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
