@@ -1,22 +1,16 @@
 import { RequestParams } from "./interface";
-import { ResultType } from "./types"
+import { ResultType } from "./types";
+import { StatusCall, GenericMessage } from './enum';
+
 
 /* The class is a static class that has a static method that takes a RequestParams object as a
 parameter and returns a promise. */
 export class Api {
 
-    /**
-     * @param {RequestParams} reqParams - RequestParams
-     * @param [succFn] - (res: any) => void
-     * @param [errorFn] - (err: Error) => void
-     * @returns The resultCall is being returned.
-     */
-    static async callGlobal(reqParams: RequestParams, succFn?: (res: any) => void, errorFn?: (err: Error) => void) {
-        /**
-         * Body of the request, with the required "method" property
-         * The other properties are optional, in case of undefined or null value, the default value is taken.
-         */
+    static async callGlobal(reqParams: RequestParams, succFn?: (res: any) => void): Promise<ResultType> {
 
+
+        /* It's assigning the values of the RequestParams object to the data object. */
         reqParams.data = {
             body: reqParams.body ?? null,
             method: reqParams.method,
@@ -30,59 +24,54 @@ export class Api {
             referrerPolicy: reqParams.referrerPolicy ?? 'same-origin'
         }
 
-        let resultCall: ResultType = await this.genericFetch(reqParams.url, reqParams.data!);
-
-
-        /* It's checking if the resultCall is true or false. If it's true, it calls the succFn function, if
-        it's false, it calls the errorFn function. */
-        if (resultCall instanceof Response) {
-            if (succFn !== undefined)
-                succFn(resultCall);
-
-        } else {
-            if (errorFn !== undefined)
-                errorFn(resultCall)
-        }
+        let resultCall = await this.genericFetch(reqParams.url, reqParams.data!, succFn);
 
         return resultCall;
     }
 
-    /**
-     * @param {string} url - string - The url to which the request will be sent.
-     * @param {RequestInit} [data] - RequestInit 
-     * @returns The result of the fetch request.
-     */
-    private static async genericFetch(url: string, data?: RequestInit) {
 
-        if (data !== undefined) {
+    private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: any) => void): Promise<any> {
 
-            let resultGeneric: Response = await fetch(url, data)
-                .then((response: Response) => {
-                    return response.json();
-                })
-                .catch((err: Error) => {
-                    throw err;
-                });
+        let resultGeneric: Response;
+        try {
+            if (data !== undefined) {
 
+                resultGeneric = await fetch(url, data);
+                
+                if (!resultGeneric.ok) {
+                    switch (resultGeneric.status) {
+                        case undefined:
+                            return StatusCall.STAT_UNDEFINED;
+                        case 403:
+                            return StatusCall.STAT_403;
+                        case 404:
+                            return StatusCall.STAT_404;
+                        case 405:
+                            return StatusCall.STAT_405;
+                        case 500:
+                            return StatusCall.STAT_500;
+                        default:
+                            return resultGeneric.status;
+                    }
+                } else {
 
-            if (!resultGeneric.ok) {
-                switch (resultGeneric.status) {
-                    case 403:
-                        return new Error("⛔️ You do not have the necessary permissions to log in! ⛔️");
-                    case 404:
-                        return new Error("❌ Page not found! ❌");
-                    case 405:
-                        return new Error("☢️ Operation not allowed! ☢️");
-                    case 500:
-                        return new Error("☠️ Server side error! ☠️");
+                    if (resultGeneric.status == 200) {
+
+                        if (succFn !== undefined) {
+                            succFn(JSON.stringify(resultGeneric));
+                        } else {
+                            return resultGeneric.json();
+                        }
+                    }
                 }
+
             } else {
-                return resultGeneric.json();
+                return GenericMessage.DATA_UNDEFINED;
             }
-
-        } else {
-
-            throw new Error(`The params are undefined!`);
+        } catch (e) {
+            console.log(e);
+            return null;
         }
+
     }
 }
