@@ -1,2 +1,1 @@
-export type MethodCall = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-export type ResultType = Response | Error;
+export type MethodCall = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | "get" | "post" | "put" | "patch";
