@@ -7,4 +7,5 @@ export enum StatusCall {
 }
 export enum GenericMessage {
     DATA_UNDEFINED = "👎 Params are undefined! 👎",
+    CATCH_ERROR = "👀 Oops ... something went wrong, check the console for more information (F12 on the keyboard) 👀"
 }

@@ -24,7 +24,7 @@ export class Api {
             referrerPolicy: reqParams.referrerPolicy ?? 'same-origin'
         }
 
-        let resultCall = await this.genericFetch(reqParams.url, reqParams.data!, succFn);
+        let resultCall:Response = await this.genericFetch(reqParams.url, reqParams.data!, succFn);
 
         return resultCall;
     }
@@ -70,7 +70,7 @@ export class Api {
             }
         } catch (e) {
             console.log(e);
-            return null;
+            return GenericMessage.CATCH_ERROR;
         }
 
     }
