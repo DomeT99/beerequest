@@ -12,7 +12,7 @@ export class Api {
      * successful.
      * @returns The resultCall variable is being returned.
      */
-    static async callGlobal(reqParams: RequestParams, succFn?: (res: any) => void): Promise<Response> {
+    static async callGlobal(reqParams: RequestParams, succFn?: (res: Promise<any>) => any, errorFn?: (error: StatusCall | number) => StatusCall | number) {
 
 
         /* It's assigning the values of the RequestParams object to the data object. */
@@ -29,7 +29,7 @@ export class Api {
             referrerPolicy: reqParams.referrerPolicy ?? 'same-origin'
         }
 
-        let resultCall: Response = await this.genericFetch(reqParams.url, reqParams.data!, succFn);
+        let resultCall: Response = await this.genericFetch(reqParams.url, reqParams.data, succFn, errorFn);
 
         return resultCall;
     }
@@ -42,38 +42,40 @@ export class Api {
      * @param [succFn] - (res: any) => void
      * @returns The resultGeneric.json() is being returned.
      */
-    private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: any) => void): Promise<any> {
+    private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: Promise<any>) => any, errorFn?: (error: StatusCall | number) => StatusCall | number) {
 
-        let resultGeneric: Response;
+        let promiseResult: Response;
         try {
             if (data !== undefined) {
 
-                resultGeneric = await fetch(url, data);
+                promiseResult = await fetch(url, data);
 
-                if (!resultGeneric.ok) {
-                    switch (resultGeneric.status) {
+                if (!promiseResult.ok) {
+                    switch (promiseResult.status) {
                         case undefined:
-                            return StatusCall.STAT_UNDEFINED;
+                            errorFn !== undefined ? StatusCall.STAT_UNDEFINED : errorFn(StatusCall.STAT_UNDEFINED);
+                            break;
                         case 403:
-                            return StatusCall.STAT_403;
+                            errorFn !== undefined ? StatusCall.STAT_403 : errorFn(StatusCall.STAT_403);
+                            break;
                         case 404:
-                            return StatusCall.STAT_404;
+                            errorFn !== undefined ? StatusCall.STAT_404 : errorFn(StatusCall.STAT_404);
+                            break;
                         case 405:
-                            return StatusCall.STAT_405;
+                            errorFn !== undefined ? StatusCall.STAT_405 : errorFn(StatusCall.STAT_405);
+                            break;
                         case 500:
-                            return StatusCall.STAT_500;
+                            errorFn !== undefined ? StatusCall.STAT_500 : errorFn(StatusCall.STAT_500);
+                            break;
                         default:
-                            return resultGeneric.status;
+                            errorFn !== undefined ? promiseResult.status : errorFn(promiseResult.status);
+                            break;
                     }
                 } else {
-
-                    if (resultGeneric.status == 200) {
-
-                        if (succFn !== undefined) {
-                            succFn(JSON.stringify(resultGeneric));
-                        } else {
-                            return resultGeneric.json();
-                        }
+                    if (succFn !== undefined) {
+                        succFn(await Promise.resolve(promiseResult.json()));
+                    } else {
+                        return promiseResult.json();
                     }
                 }
 

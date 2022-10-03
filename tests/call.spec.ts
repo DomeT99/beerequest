@@ -2,77 +2,89 @@ import { Api, RequestParams, StatusCall, GenericMessage } from '../src/index';
 import fetchMock from 'jest-fetch-mock';
 
 /**
- * In these test suite are used the API of "https://pokeapi.co/" 
+ * In these test suite are used the API of "https://pokeapi.co/ and "https://jsonplaceholder.typicode.com/" 
  * as a reference for generating errors and exception. 
  * */
-
 describe("Test success call", () => {
+    jest.setTimeout(20000);
 
-    test("Success call", async () => {
+    test("Success call: GET", async () => {
         let result = {
-            "firmness": {
-                "name": "soft",
-                "url": "https://pokeapi.co/api/v2/berry-firmness/2/"
-            },
-            "flavors": [
-                {
-                    "flavor": {
-                        "name": "spicy",
-                        "url": "https://pokeapi.co/api/v2/berry-flavor/1/"
-                    },
-                    "potency": 10
-                },
-                {
-                    "flavor": {
-                        "name": "dry",
-                        "url": "https://pokeapi.co/api/v2/berry-flavor/2/"
-                    },
-                    "potency": 0
-                },
-                {
-                    "flavor": {
-                        "name": "sweet",
-                        "url": "https://pokeapi.co/api/v2/berry-flavor/3/"
-                    },
-                    "potency": 0
-                },
-                {
-                    "flavor": {
-                        "name": "bitter",
-                        "url": "https://pokeapi.co/api/v2/berry-flavor/4/"
-                    },
-                    "potency": 0
-                },
-                {
-                    "flavor": {
-                        "name": "sour",
-                        "url": "https://pokeapi.co/api/v2/berry-flavor/5/"
-                    },
-                    "potency": 0
-                }
-            ],
-            "growth_time": 3,
+            "userId": 1,
             "id": 1,
-            "item": {
-                "name": "cheri-berry",
-                "url": "https://pokeapi.co/api/v2/item/126/"
-            },
-            "max_harvest": 5,
-            "name": "cheri",
-            "natural_gift_power": 60,
-            "natural_gift_type": {
-                "name": "fire",
-                "url": "https://pokeapi.co/api/v2/type/10/"
-            },
-            "size": 20,
-            "smoothness": 25,
-            "soil_dryness": 15
+            "title": "delectus aut autem",
+            "completed": false
         }
         fetchMock.mockResponse(JSON.stringify(result));
 
         let params: RequestParams = {
-            url: "https://pokeapi.co/api/v2/berry/1",
+            url: "https://jsonplaceholder.typicode.com/todos/1",
             method: "GET"
+        }
+
+        let callTest = await Api.callGlobal(params);
+
+        expect(callTest).toEqual(result);
+    })
+
+    test("Success call: POST", async () => {
+        let result = {
+            id: 101,
+            title: 'foo',
+            body: 'bar',
+            userId: 1
+        }
+        fetchMock.mockResponse(JSON.stringify(result));
+
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/posts",
+            method: "POST",
+            body: JSON.stringify({
+                title: 'foo',
+                body: 'bar',
+                userId: 1,
+            }),
+        }
+
+        let callTest = await Api.callGlobal(params);
+
+        expect(callTest).toEqual(result);
+    })
+
+    test("Success call: PUT", async () => {
+
+        let result = {
+            id: 1,
+            title: 'foo',
+            body: 'bar',
+            userId: 1
+        }
+        fetchMock.mockResponse(JSON.stringify(result));
+
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/posts/1",
+            method: 'PUT',
+            body: JSON.stringify({
+                id: 1,
+                title: 'foo',
+                body: 'bar',
+                userId: 1,
+            }),
+        }
+
+        let callTest = await Api.callGlobal(params);
+
+        expect(callTest).toEqual(result);
+    })
+
+    test("Success call: DELETE", async () => {
+
+        let result = {};
+        fetchMock.mockResponse(JSON.stringify(result));
+
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/posts/1",
+            method: 'DELETE'
         }
 
         let callTest = await Api.callGlobal(params);
@@ -81,13 +93,133 @@ describe("Test success call", () => {
     })
 })
 
+describe("Test call CB Function", () => {
+    jest.setTimeout(20000);
+
+    test("Success call: GET", async () => {
+        let equalRes = {
+            "userId": 1,
+            "id": 1,
+            "title": "delectus aut autem",
+            "completed": false
+        }
+        fetchMock.mockResponse(JSON.stringify(equalRes));
+
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/todos/1",
+            method: "GET"
+        }
+
+        let res;
+        await Api.callGlobal(params, (result) => {
+            res = result;
+        });
+        expect(res).toEqual(equalRes);
+
+    })
+
+    test("Success call: POST", async () => {
+        let equalRes = {
+            id: 101,
+            title: 'foo',
+            body: 'bar',
+            userId: 1
+        }
+        fetchMock.mockResponse(JSON.stringify(equalRes));
+
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/posts",
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'foo',
+                body: 'bar',
+                userId: 1,
+            })
+        }
+
+        let res;
+        await Api.callGlobal(params, (result) => {
+            res = result;
+        });
+        expect(res).toEqual(equalRes);
+
+    })
+
+    test("Success call: PUT", async () => {
+        let equalRes = {
+            id: 1,
+            title: 'foo',
+            body: 'bar',
+            userId: 1
+        }
+        fetchMock.mockResponse(JSON.stringify(equalRes));
+
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/posts/1",
+            method: 'PUT',
+            body: JSON.stringify({
+                id: 1,
+                title: 'foo',
+                body: 'bar',
+                userId: 1,
+            })
+        }
+
+        let res;
+        await Api.callGlobal(params, (result) => {
+            res = result;
+        });
+        expect(res).toEqual(equalRes);
+    })
+
+    test("Success call: PATCH", async () => {
+        let equalRes = {
+            id: 1,
+            title: 'foo',
+            body: 'test patch',
+            userId: 1
+        }
+        fetchMock.mockResponse(JSON.stringify(equalRes));
+
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/posts/1",
+            method: 'PATCH',
+            body: JSON.stringify({
+                title: 'foo',
+                body: 'test patch'
+            })
+        }
+
+        let res;
+        await Api.callGlobal(params, (result) => {
+            res = result;
+        });
+        expect(res).toEqual(equalRes);
+    })
+
+    test("Success call: DELETE", async () => {
+        let equalRes = {}
+        fetchMock.mockResponse(JSON.stringify(equalRes));
+        let params: RequestParams = {
+            url: "https://jsonplaceholder.typicode.com/posts/1",
+            method: 'DELETE'
+        }
+        let res;
+        await Api.callGlobal(params, (result) => {
+            res = result;
+        });
+        expect(res).toEqual(equalRes);
+    })
+})
+
 describe("Suite error call", () => {
     /**In this suite, tests are performed 
      * for possible errors generated by calls 
      * */
-    test("Check status result: ex. 404 NOT FOUND", async () => {
-        /**Generic test for status return: status 404 as an example */
+    jest.setTimeout(20000);
 
+    test.only("Check status result: ex. 404 NOT FOUND", async () => {
+        /**Generic test for status return: status 404 as an example */
         fetchMock.mockResponse(JSON.stringify(StatusCall.STAT_404));
 
         let params: RequestParams = {
