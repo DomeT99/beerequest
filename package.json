@@ -1,7 +1,7 @@
 {
   "name": "http-bee-request",
   "version": "0.4.4",
-  "description": "A little package for HttpRequest",
+  "description": "🐝A little tool to make web calling a breeze!🐝",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
