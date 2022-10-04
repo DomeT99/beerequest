@@ -2,6 +2,7 @@ import { RequestParams } from "./interface";
 import { StatusCall, GenericMessage } from './enum';
 
 
+
 /* The class is a static class that has a static method that takes a RequestParams object as a
 parameter and returns a promise. */
 export class Api {
@@ -12,7 +13,7 @@ export class Api {
      * successful.
      * @returns The resultCall variable is being returned.
      */
-    static async callGlobal(reqParams: RequestParams, succFn?: (res: Promise<any>) => any, errorFn?: (error: StatusCall | number) => StatusCall | number) {
+    static async callGlobal(reqParams: RequestParams, succFn?: (res: Promise<any>) => any, errorFn?: (error: StatusCall | number) => any) {
 
 
         /* It's assigning the values of the RequestParams object to the data object. */
@@ -34,43 +35,46 @@ export class Api {
         return resultCall;
     }
 
-
-
     /**
      * @param {string} url - string - the url to fetch
      * @param {RequestInit} [data] 
      * @param [succFn] - (res: any) => void
      * @returns The resultGeneric.json() is being returned.
      */
-    private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: Promise<any>) => any, errorFn?: (error: StatusCall | number) => StatusCall | number) {
+    private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: Promise<any>) => any, errorFn?: (error: number) => any) {
 
         let promiseResult: Response;
         try {
+
             if (data !== undefined) {
 
                 promiseResult = await fetch(url, data);
 
                 if (!promiseResult.ok) {
+
                     switch (promiseResult.status) {
+
                         case undefined:
-                            errorFn !== undefined ? StatusCall.STAT_UNDEFINED : errorFn(StatusCall.STAT_UNDEFINED);
-                            break;
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_UNDEFINED);
+                        case 401:
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_401);
                         case 403:
-                            errorFn !== undefined ? StatusCall.STAT_403 : errorFn(StatusCall.STAT_403);
-                            break;
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_403);
                         case 404:
-                            errorFn !== undefined ? StatusCall.STAT_404 : errorFn(StatusCall.STAT_404);
-                            break;
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_404);
                         case 405:
-                            errorFn !== undefined ? StatusCall.STAT_405 : errorFn(StatusCall.STAT_405);
-                            break;
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_405);
+                        case 429:
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_429);
                         case 500:
-                            errorFn !== undefined ? StatusCall.STAT_500 : errorFn(StatusCall.STAT_500);
-                            break;
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_500);
+                        case 502:
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_502);
                         default:
-                            errorFn !== undefined ? promiseResult.status : errorFn(promiseResult.status);
-                            break;
+                            return this.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_UNDEFINED);
+
                     }
+
                 } else {
                     if (succFn !== undefined) {
                         succFn(await Promise.resolve(promiseResult.json()));
@@ -80,12 +84,31 @@ export class Api {
                 }
 
             } else {
-                return GenericMessage.DATA_UNDEFINED;
+                throw GenericMessage.DATA_UNDEFINED;
             }
+
         } catch (e) {
-            console.log(e);
-            return GenericMessage.CATCH_ERROR;
+            console.error(e);
+            throw GenericMessage.CATCH_ERROR;
         }
 
+    }
+
+    /**
+     * @param genericFn - (statusParam: number) => void - This is the function that is passed in to the
+     * function.
+     * @param {number} statusCall - number - This is the status code that will be returned to the user.
+     * @param {StatusCall} [statusCallMessage] - This is the message that will be displayed in the console.
+     * @returns The return value is the statusCall value.
+     */
+    private static checkFunction(genericFn: (statusParam: number) => void, statusCall: number, statusCallMessage?: StatusCall) {
+        if (genericFn !== undefined) {
+            console.error(statusCallMessage);
+            genericFn(statusCall);
+        }
+        else {
+            console.error(statusCallMessage);
+            return statusCall;
+        }
     }
 }

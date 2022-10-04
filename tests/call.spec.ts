@@ -1,8 +1,8 @@
-import { Api, RequestParams, StatusCall, GenericMessage } from '../src/index';
+import { Api, RequestParams } from '../src/index';
 import fetchMock from 'jest-fetch-mock';
 
 /**
- * In these test suite are used the API of "https://pokeapi.co/ and "https://jsonplaceholder.typicode.com/" 
+ * In these test suite are used the API of "https://jsonplaceholder.typicode.com/" 
  * as a reference for generating errors and exception. 
  * */
 describe("Test success call", () => {
@@ -218,12 +218,12 @@ describe("Suite error call", () => {
      * */
     jest.setTimeout(20000);
 
-    test.only("Check status result: ex. 404 NOT FOUND", async () => {
+    test("Check status result: ex. 404 NOT FOUND", async () => {
         /**Generic test for status return: status 404 as an example */
-        fetchMock.mockResponse(JSON.stringify(StatusCall.STAT_404));
+        fetchMock.mockResponse(JSON.stringify(404));
 
         let params: RequestParams = {
-            url: 'https://pokeapi.co/api/v2/generation/1200',
+            url: 'https://jsonplaceholder.typicode.com/posts/14654645',
             method: "GET"
         };
 
@@ -231,23 +231,24 @@ describe("Suite error call", () => {
         let callTest = await Api.callGlobal(params);
 
 
-        expect(callTest).toEqual(StatusCall.STAT_404);
+        expect(callTest).toEqual(404);
     })
 
-
-    test("Catch error", async () => {
-        /**Testing the catch() block during the call */
-        fetchMock.mockResponse(JSON.stringify(GenericMessage.CATCH_ERROR));
+    test("Check status result with CB Function: ex. 404 NOT FOUND", async () => {
+        /**Generic test with callback functions for status return: status 404 as an example */
+        fetchMock.mockResponse(JSON.stringify(404));
 
         let params: RequestParams = {
-            url: 'https://pokeaspi.co/api/v2/generation/1200',
+            url: 'https://jsonplaceholder.typicode.com/posts/14654645',
             method: "GET"
         };
 
 
-        let callTest = await Api.callGlobal(params);
-
-
-        expect(callTest).toEqual(GenericMessage.CATCH_ERROR);
+        await Api.callGlobal(params, (result) => {
+            return result;
+        }, (error) => {
+            expect(error).toBe(404);
+        });
     })
+
 })
