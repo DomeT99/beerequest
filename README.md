@@ -16,7 +16,7 @@ You can install Http Bee Request using npm
 
 #### NB: the calls return a promise, so they must be done asynchronously through the ```async``` and ```await``` keywords
 
-***Javascript***
+**Javascript**
 ```javascript
 import { Api } from 'http-bee-request'
 
@@ -33,7 +33,7 @@ async function callExample() {
 }
 ```
 
-***Typescript***
+**Typescript**
 ```javascript
 import { Api, RequestParams } from 'http-bee-request'
 
@@ -95,7 +95,7 @@ Not all calls to the server need data to be sent, for this reason `body` is opti
 
 Here are some examples of how to use this parameter:
 
-***Javascript***
+**Javascript**
 ```javascript
 import { Api } from 'http-bee-request'
 
@@ -115,7 +115,7 @@ async function callExample() {
 }
 ```
 
-***Typescript***
+**Typescript**
 ```javascript
 import { Api, RequestParams } from 'http-bee-request'
 
@@ -132,6 +132,102 @@ async function callExample() {
   };
   
    await Api.callGlobal(params);
+}
+```
+You can safely store the POST result or use a callback as a parameter.
+
+### Status handling
+
+During a call to the server, it may happen that it fails.
+If this happens, the status value is returned.
+Let's see some examples:
+
+**Javascript**
+```javascript
+import { Api } from 'http-bee-request'
+
+async function callExample() {
+  
+  let params = {
+    url:"https://example.com/121",
+    method:"GET",
+  };
+  
+  let res = await Api.callGlobal(params);
+
+  if(res == 404){
+    //some code...
+  }
+}
+```
+
+**Typescript**
+```javascript
+import { Api, RequestParams } from 'http-bee-request'
+
+async function callExample() {
+  
+  let params : RequestParams = {
+    url:"https://example.com/121",
+    method:"GET"
+  };
+  
+  let res = await Api.callGlobal(params);
+
+  if(res == 404){
+    //some code...
+  }
+}
+```
+
+
+or you can use callback functions
+
+
+
+
+**Javascript**
+```javascript
+import { Api } from 'http-bee-request'
+
+async function callExample() {
+  
+  let params = {
+    url:"https://example.com/121",
+    method:"GET",
+  };
+  
+    await Api.callGlobal(params,(result) => {
+        console.log(result);
+    }, (status) => {
+        
+        if(status == 404){
+        //some code...
+        }
+    });
+
+}
+```
+
+**Typescript**
+```javascript
+import { Api, RequestParams } from 'http-bee-request'
+
+async function callExample() {
+  
+  let params : RequestParams = {
+    url:"https://example.com/121",
+    method:"GET"
+  };
+  
+    await Api.callGlobal(params,(result) => {
+        console.log(result);
+    }, (status) => {
+        
+        if(status == 404){
+        //some code...
+        }
+    });
 }
 ```
 ## Authors
