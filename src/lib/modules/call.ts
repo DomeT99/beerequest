@@ -35,47 +35,35 @@ export class Api {
         return resultCall;
     }
 
+
     /**
-     * @param {string} url - string - the url to fetch
-     * @param {RequestInit} [data] 
-     * @param [succFn] - (res: any) => void
-     * @returns The resultGeneric.json() is being returned.
+     * @param {string} url - string - The url to fetch
+     * @param {RequestInit} [data] - RequestInit - this is the data that is sent to the server.
+     * @param [succFn] - (res: Promise) => any
+     * @param [errorFn] - (error: number) => any
+     * @returns The return type is a Promise.
      */
     private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: Promise<any>) => any, errorFn?: (error: number) => any) {
 
         let promiseResult: Response;
+        /** "try catch" block for handling any exceptions.  */
         try {
 
+            /**
+             * Control of incoming data:
+             * if undefined I show an error message
+             */
             if (data !== undefined) {
 
                 promiseResult = await fetch(url, data);
 
+                
                 if (!promiseResult.ok) {
-
-                    switch (promiseResult.status) {
-
-                        case undefined:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_UNDEFINED);
-                        case 401:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_401);
-                        case 403:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_403);
-                        case 404:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_404);
-                        case 405:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_405);
-                        case 429:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_429);
-                        case 500:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_500);
-                        case 502:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_502);
-                        default:
-                            return ErrorHandler.checkFunction(errorFn, promiseResult.status, StatusCall.STAT_UNDEFINED);
-
-                    }
-
+                    /**Error handling */
+                    return ErrorHandler.statusHandler(promiseResult, errorFn);
+                
                 } else {
+                    
                     if (succFn !== undefined) {
                         succFn(await Promise.resolve(promiseResult.json()));
                     } else {
