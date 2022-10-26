@@ -18,7 +18,7 @@ export class Api {
 
         /* It's assigning the values of the RequestParams object to the data object. */
         reqParams.data = {
-            body: reqParams.body ?? null,
+            body: JSON.stringify(reqParams.body) ?? null,
             method: reqParams.method,
             headers: reqParams.headers ?? { 'Content-type': 'application/json; charset=UTF-8' },
             cache: reqParams.cache ?? 'no-cache',
