@@ -37,3 +37,8 @@ export interface RequestParams {
     /* Can only be null. Used to disassociate request from any Window. */
     window?: null;
 }
+
+export interface ResponseCall {
+    status: number;
+    result: Promise<any> | Response | {};
+}

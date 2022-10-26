@@ -1,4 +1,4 @@
-import { Api, RequestParams } from '../src/index';
+import { Api, RequestParams, ResponseCall } from '../src/index';
 import fetchMock from 'jest-fetch-mock';
 
 /**
@@ -9,11 +9,14 @@ describe("Test success call", () => {
     jest.setTimeout(20000);
 
     test("Success call: GET", async () => {
-        let result = {
-            "userId": 1,
-            "id": 1,
-            "title": "delectus aut autem",
-            "completed": false
+        let result: ResponseCall = {
+            status: 200,
+            result: {
+                userId: 1,
+                id: 1,
+                title: "delectus aut autem",
+                completed: false
+            }
         }
         fetchMock.mockResponse(JSON.stringify(result));
 
@@ -28,11 +31,14 @@ describe("Test success call", () => {
     })
 
     test("Success call: POST", async () => {
-        let result = {
-            id: 101,
-            title: 'foo',
-            body: 'bar',
-            userId: 1
+        let result: ResponseCall = {
+            status: 201,
+            result: {
+                id: 101,
+                title: 'foo',
+                body: 'bar',
+                userId: 1
+            }
         }
         fetchMock.mockResponse(JSON.stringify(result));
 
@@ -53,11 +59,14 @@ describe("Test success call", () => {
 
     test("Success call: PUT", async () => {
 
-        let result = {
-            id: 1,
-            title: 'foo',
-            body: 'bar',
-            userId: 1
+        let result: ResponseCall = {
+            status: 200,
+            result: {
+                id: 1,
+                title: 'foo',
+                body: 'bar',
+                userId: 1
+            }
         }
         fetchMock.mockResponse(JSON.stringify(result));
 
@@ -78,12 +87,14 @@ describe("Test success call", () => {
     })
 
     test("Success call: PATCH", async () => {
-
-        let result = {
-            id: 1,
-            title: 'Test title',
-            body:'Test Body',
-            userId: 1
+        let result: ResponseCall = {
+            status: 200,
+            result: {
+                id: 1,
+                title: 'Test title',
+                body: 'Test Body',
+                userId: 1
+            }
         }
         fetchMock.mockResponse(JSON.stringify(result));
 
@@ -92,7 +103,7 @@ describe("Test success call", () => {
             method: 'PATCH',
             body: JSON.stringify({
                 title: 'Test title',
-                body:'Test Body'
+                body: 'Test Body'
             }),
         }
 
@@ -103,7 +114,10 @@ describe("Test success call", () => {
 
     test("Success call: DELETE", async () => {
 
-        let result = {};
+        let result: ResponseCall = {
+            status: 200,
+            result: {}
+        };
         fetchMock.mockResponse(JSON.stringify(result));
 
         let params: RequestParams = {

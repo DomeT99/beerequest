@@ -1,3 +1,3 @@
 export { Api } from "./modules/call";
-export { RequestParams } from './modules/interface';
+export { RequestParams, ResponseCall } from './modules/interface';
 

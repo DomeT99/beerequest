@@ -1,4 +1,4 @@
-import { RequestParams } from "./interface";
+import { RequestParams, ResponseCall } from "./interface";
 import { StatusCall, GenericMessage } from './enum';
 import { ErrorHandler } from './errorHandler';
 
@@ -13,7 +13,7 @@ export class Api {
      * successful.
      * @returns The resultCall variable is being returned.
      */
-    static async callGlobal(reqParams: RequestParams, succFn?: (res: Promise<any>) => any, errorFn?: (error: StatusCall | number) => any) {
+    static async callGlobal(reqParams: RequestParams, succFn?: (res: ResponseCall) => any, errorFn?: (error: StatusCall | number) => any) {
 
 
         /* It's assigning the values of the RequestParams object to the data object. */
@@ -25,13 +25,13 @@ export class Api {
             credentials: reqParams.credentials ?? 'same-origin',
             integrity: reqParams.integrity ?? '',
             keepalive: reqParams.keepalive ?? false,
-            mode: reqParams.mode ?? 'cors',
+            mode: reqParams.mode ?? 'same-origin',
             redirect: reqParams.redirect ?? 'follow',
             referrerPolicy: reqParams.referrerPolicy ?? 'same-origin'
         }
 
-        let resultCall: Response = await this.genericFetch(reqParams.url, reqParams.data, succFn, errorFn);
-
+        let resultCall: ResponseCall = await this.genericFetch(reqParams.url, reqParams.data, succFn, errorFn);
+        
         return resultCall;
     }
 
@@ -43,9 +43,10 @@ export class Api {
      * @param [errorFn] - (error: number) => any
      * @returns The return type is a Promise.
      */
-    private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: Promise<any>) => any, errorFn?: (error: number) => any) {
+    private static async genericFetch(url: string, data?: RequestInit, succFn?: (res: ResponseCall | {}) => any, errorFn?: (error: number) => any) {
 
         let promiseResult: Response;
+
         /** "try catch" block for handling any exceptions.  */
         try {
 
@@ -57,17 +58,27 @@ export class Api {
 
                 promiseResult = await fetch(url, data);
 
-                
                 if (!promiseResult.ok) {
                     /**Error handling */
                     return ErrorHandler.statusHandler(promiseResult, errorFn);
-                
+
                 } else {
-                    
+
                     if (succFn !== undefined) {
-                        succFn(await Promise.resolve(promiseResult.json()));
+
+                        succFn({
+                            status: promiseResult.status,
+                            result: await Promise.resolve(promiseResult.json())
+                                .then((res) => { return res })
+                        });
+
                     } else {
-                        return promiseResult.json();
+
+                        return ({
+                            status: promiseResult.status,
+                            result: await Promise.resolve(promiseResult.json())
+                                .then((res) => { return res })
+                        });
                     }
                 }
 
