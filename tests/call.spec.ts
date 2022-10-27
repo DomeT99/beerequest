@@ -1,4 +1,5 @@
-import { Api, RequestParams, ResponseCall } from '../src/index';
+import { Api } from '../src/lib/modules/call';
+import { ResponseCall, RequestParams } from '../src/lib/modules/interface';
 import fetchMock from 'jest-fetch-mock';
 
 /**
@@ -45,11 +46,11 @@ describe("Test success call", () => {
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/posts",
             method: "POST",
-            body: JSON.stringify({
+            body: {
                 title: 'foo',
                 body: 'bar',
                 userId: 1,
-            }),
+            },
         }
 
         let callTest = await Api.callGlobal(params);
@@ -73,12 +74,12 @@ describe("Test success call", () => {
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/posts/1",
             method: 'PUT',
-            body: JSON.stringify({
+            body: {
                 id: 1,
                 title: 'foo',
                 body: 'bar',
                 userId: 1,
-            }),
+            },
         }
 
         let callTest = await Api.callGlobal(params);
@@ -101,10 +102,10 @@ describe("Test success call", () => {
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/posts/1",
             method: 'PATCH',
-            body: JSON.stringify({
+            body: {
                 title: 'Test title',
                 body: 'Test Body'
-            }),
+            },
         }
 
         let callTest = await Api.callGlobal(params);
@@ -135,13 +136,16 @@ describe("Test call CB Function", () => {
     jest.setTimeout(20000);
 
     test("Success call: GET", async () => {
-        let equalRes = {
-            "userId": 1,
-            "id": 1,
-            "title": "delectus aut autem",
-            "completed": false
+        let result: ResponseCall = {
+            status: 200,
+            result: {
+                userId: 1,
+                id: 1,
+                title: "delectus aut autem",
+                completed: false
+            }
         }
-        fetchMock.mockResponse(JSON.stringify(equalRes));
+        fetchMock.mockResponse(JSON.stringify(result));
 
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/todos/1",
@@ -152,92 +156,108 @@ describe("Test call CB Function", () => {
         await Api.callGlobal(params, (result) => {
             res = result;
         });
-        expect(res).toEqual(equalRes);
+        expect(res).toEqual(result);
 
     })
 
     test("Success call: POST", async () => {
-        let equalRes = {
-            id: 101,
-            title: 'foo',
-            body: 'bar',
-            userId: 1
+        let result: ResponseCall = {
+            status: 201,
+            result: {
+                id: 101,
+                title: 'foo',
+                body: 'bar',
+                userId: 1
+            }
         }
-        fetchMock.mockResponse(JSON.stringify(equalRes));
+        fetchMock.mockResponse(JSON.stringify(result));
 
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/posts",
             method: 'POST',
-            body: JSON.stringify({
+            body: {
                 title: 'foo',
                 body: 'bar',
                 userId: 1,
-            })
+            }
         }
 
         let res;
-        await Api.callGlobal(params, (result) => {
-            res = result;
+        await Api.callGlobal(params, (resultCall) => {
+            res = resultCall;
         });
-        expect(res).toEqual(equalRes);
+        expect(res).toEqual(result);
 
     })
 
     test("Success call: PUT", async () => {
-        let equalRes = {
-            id: 1,
-            title: 'foo',
-            body: 'bar',
-            userId: 1
+        let result: ResponseCall = {
+            status: 200,
+            result: {
+                id: 1,
+                title: 'foo',
+                body: 'bar',
+                userId: 1
+            }
         }
-        fetchMock.mockResponse(JSON.stringify(equalRes));
+        fetchMock.mockResponse(JSON.stringify(result));
 
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/posts/1",
             method: 'PUT',
-            body: JSON.stringify({
+            body: {
                 id: 1,
                 title: 'foo',
                 body: 'bar',
                 userId: 1,
-            })
+            }
         }
 
         let res;
         await Api.callGlobal(params, (result) => {
             res = result;
         });
-        expect(res).toEqual(equalRes);
+        expect(res).toEqual(result);
     })
 
     test("Success call: PATCH", async () => {
-        let equalRes = {
-            id: 1,
-            title: 'foo',
-            body: 'test patch',
-            userId: 1
+        let result: ResponseCall = {
+            status: 200,
+            result: {
+                id: 1,
+                title: 'foo',
+                body: 'test patch',
+                userId: 1
+            }
         }
-        fetchMock.mockResponse(JSON.stringify(equalRes));
+        fetchMock.mockResponse(JSON.stringify(result));
 
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/posts/1",
             method: 'PATCH',
-            body: JSON.stringify({
+            body: {
                 title: 'foo',
                 body: 'test patch'
-            })
+            }
         }
 
         let res;
         await Api.callGlobal(params, (result) => {
             res = result;
         });
-        expect(res).toEqual(equalRes);
+        expect(res).toEqual(result);
     })
 
     test("Success call: DELETE", async () => {
-        let equalRes = {}
-        fetchMock.mockResponse(JSON.stringify(equalRes));
+
+        let result: ResponseCall = {
+            status: 200,
+            result: {
+
+            }
+        }
+
+        fetchMock.mockResponse(JSON.stringify(result));
         let params: RequestParams = {
             url: "https://jsonplaceholder.typicode.com/posts/1",
             method: 'DELETE'
@@ -246,6 +266,6 @@ describe("Test call CB Function", () => {
         await Api.callGlobal(params, (result) => {
             res = result;
         });
-        expect(res).toEqual(equalRes);
+        expect(res).toEqual(result);
     })
 })
