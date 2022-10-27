@@ -4,12 +4,12 @@ import { ResponseCall } from './interface';
 export class ErrorHandler {
 
 
+
     /**
-     * If the response status is undefined, 401, 403, 404, 405, 429, 500, or 502, then call the error
-     * function with the response status and the corresponding StatusCall enum value.
-     * @param {Response} response - Response - this is the response from the http call
-     * @param [errorFn] - The function that will be called if the status is not 200.
-     * @returns The return value is a function that is being called with the errorFn parameter.
+     * It checks the status of the response and returns the appropriate error message.
+     * @param {Response} response - Response - The response object from the http request
+     * @param [errorFn] - The function that will be called if the status code is not 200.
+     * @returns The return value is a function that takes a parameter of type ResponseCall.
      */
     public static statusHandler(response: Response, errorFn?: (error: ResponseCall | {}) => any) {
 
@@ -36,6 +36,12 @@ export class ErrorHandler {
         }
     }
 
+    /**
+     * @param genericFn - (error: ResponseCall | {}) => void
+     * @param {Response} responseCall - Response - The response from the fetch call
+     * @param {StatusCall} [statusCallMessage] - This is the message that will be displayed in the console.
+     * @returns a Promise.
+     */
     private static async checkFunction(genericFn: (error: ResponseCall | {}) => void, responseCall: Response, statusCallMessage?: StatusCall) {
 
         if (genericFn !== undefined) {
@@ -43,14 +49,16 @@ export class ErrorHandler {
 
             genericFn({
                 status: responseCall.status,
-                result: responseCall.json()
+                result: await Promise.resolve(responseCall.json())
+                    .then((res) => { return res })
             });
         }
         else {
             console.error(statusCallMessage);
             return ({
                 status: responseCall.status,
-                result: responseCall.json()
+                result: await Promise.resolve(responseCall.json())
+                    .then((res) => { return res })
             });
         }
     }

@@ -38,6 +38,7 @@ export interface RequestParams {
     window?: null;
 }
 
+/* Defining the type of the response object. */
 export interface ResponseCall {
     status: number;
     result: Promise<any> | Response | {};
