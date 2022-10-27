@@ -1,4 +1,17 @@
 
+# Http Bee Request 🐝
+
+A little tool to make web calling a breeze!✌️
+
+
+## Installation
+
+You can install Http Bee Request using npm
+
+```bash
+  npm i http-bee-request
+```
+    
 ## Usage
 
 #### NB: the calls return a promise, so they must be done asynchronously through the ```async``` and ```await``` keywords
@@ -142,3 +155,13 @@ async function callExample() {
 
 }
 ```
+
+## Authors
+
+- [Domenico Tenace](https://github.com/DomeT99)
+
+
+## License
+
+[MIT](https://github.com/DomeT99/beerequest/blob/master/LICENSE.md)
+
