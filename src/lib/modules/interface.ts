@@ -11,7 +11,7 @@ export interface RequestParams {
      */
     data?: RequestInit;
     /* Defining the type of the body property. */
-    body?: BodyInit;
+    body?: object;
     /* Defining the type of the method property. */
     method: MethodCall;
     /* A string indicating how the request will interact with the browser's cache to set request's cache. */
@@ -36,4 +36,10 @@ export interface RequestParams {
     signal?: AbortSignal | null;
     /* Can only be null. Used to disassociate request from any Window. */
     window?: null;
+}
+
+/* Defining the type of the response object. */
+export interface ResponseCall {
+    status: number;
+    result: Promise<any> | Response | {};
 }

@@ -9,7 +9,7 @@ export interface RequestParams {
      * _data is an object where defining the body of request.
      */
     data?: RequestInit;
-    body?: BodyInit;
+    body?: object;
     method: MethodCall;
     cache?: RequestCache;
     credentials?: RequestCredentials;
@@ -22,4 +22,8 @@ export interface RequestParams {
     referrerPolicy?: ReferrerPolicy;
     signal?: AbortSignal | null;
     window?: null;
+}
+export interface ResponseCall {
+    status: number;
+    result: Promise<any> | Response | {};
 }

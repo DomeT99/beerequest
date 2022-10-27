@@ -7,22 +7,23 @@ const errorHandler_1 = require("./errorHandler");
 parameter and returns a promise. */
 class Api {
     /**
+     * It's assigning the values of the RequestParams object to the data object
      * @param {RequestParams} reqParams - RequestParams
-     * @param [succFn] - (res: any) => void: This is a function that will be called if the request is
-     * successful.
+     * @param [succFn] - (res: ResponseCall) => any
+     * @param [errorFn] - (error: StatusCall | number | ResponseCall) => any
      * @returns The resultCall variable is being returned.
      */
     static async callGlobal(reqParams, succFn, errorFn) {
         /* It's assigning the values of the RequestParams object to the data object. */
         reqParams.data = {
-            body: reqParams.body ?? null,
+            body: JSON.stringify(reqParams.body) ?? null,
             method: reqParams.method,
             headers: reqParams.headers ?? { 'Content-type': 'application/json; charset=UTF-8' },
             cache: reqParams.cache ?? 'no-cache',
             credentials: reqParams.credentials ?? 'same-origin',
             integrity: reqParams.integrity ?? '',
             keepalive: reqParams.keepalive ?? false,
-            mode: reqParams.mode ?? 'cors',
+            mode: reqParams.mode ?? 'same-origin',
             redirect: reqParams.redirect ?? 'follow',
             referrerPolicy: reqParams.referrerPolicy ?? 'same-origin'
         };
@@ -30,11 +31,13 @@ class Api {
         return resultCall;
     }
     /**
-     * @param {string} url - string - The url to fetch
-     * @param {RequestInit} [data] - RequestInit - this is the data that is sent to the server.
-     * @param [succFn] - (res: Promise) => any
-     * @param [errorFn] - (error: number) => any
-     * @returns The return type is a Promise.
+     * This function is a generic function that handles the fetch request and returns a promise with the
+     * result of the request.
+     * @param {string} url - string - the url to fetch
+     * @param {RequestInit} [data] - RequestInit = {
+     * @param [succFn] - (res: ResponseCall | {}) => any
+     * @param [errorFn] - (error: StatusCall | number | ResponseCall) => any
+     * @returns a promise.
      */
     static async genericFetch(url, data, succFn, errorFn) {
         let promiseResult;
@@ -52,10 +55,18 @@ class Api {
                 }
                 else {
                     if (succFn !== undefined) {
-                        succFn(await Promise.resolve(promiseResult.json()));
+                        succFn({
+                            status: promiseResult.status,
+                            result: await Promise.resolve(promiseResult.json())
+                                .then((res) => { return res; })
+                        });
                     }
                     else {
-                        return promiseResult.json();
+                        return ({
+                            status: promiseResult.status,
+                            result: await Promise.resolve(promiseResult.json())
+                                .then((res) => { return res; })
+                        });
                     }
                 }
             }

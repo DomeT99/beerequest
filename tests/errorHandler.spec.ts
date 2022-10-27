@@ -1,4 +1,5 @@
-import { Api, RequestParams } from '../src/index';
+import { Api } from '../src/lib/modules/call';
+import { RequestParams, ResponseCall } from '../src/lib/modules/interface';
 import fetchMock from 'jest-fetch-mock';
 
 /**
@@ -12,8 +13,14 @@ describe("Suite error call", () => {
     jest.setTimeout(20000);
 
     test("Check status result: ex. 404 NOT FOUND", async () => {
+        let result: ResponseCall = {
+            status: 404,
+            result: {}
+        }
+
+
         /**Generic test for status return: status 404 as an example */
-        fetchMock.mockResponse(JSON.stringify(404));
+        fetchMock.mockResponse(JSON.stringify(result));
 
         let params: RequestParams = {
             url: 'https://jsonplaceholder.typicode.com/posts/14654645',
@@ -24,7 +31,7 @@ describe("Suite error call", () => {
         let callTest = await Api.callGlobal(params);
 
 
-        expect(callTest).toEqual(404);
+        expect(callTest).toEqual(result);
     })
 
     test("Check status result with CB Function: ex. 404 NOT FOUND", async () => {
@@ -37,10 +44,14 @@ describe("Suite error call", () => {
         };
 
 
-        await Api.callGlobal(params, (result) => {
-            return result;
+        await Api.callGlobal(params, (resultCall) => {
+            return resultCall;
         }, (error) => {
-            expect(error).toBe(404);
+            let result: ResponseCall = {
+                status: 404,
+                result: {}
+            }
+            expect(error).toStrictEqual(result);
         });
     })
 
