@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\src\\lib\\call.ts",
+            "program": "${workspaceFolder}\\src\\lib\\modules\\beerequest.ts",
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
