@@ -1,1 +1,1 @@
-export * from './lib';
+export { BeeRequest } from "./lib/modules/beerequest";

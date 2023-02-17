@@ -1,5 +1,9 @@
 export class BeeRequest {
-  public async call<T>(url: string, requestInit?: RequestInit) {
+  public async useFetch<T>(
+    url: string,
+    requestInit?: RequestInit
+  ): Promise<T> {
+    
     let result: T = await fetch(url, requestInit)
       .then((data) => data)
       .then((res) => {
@@ -12,3 +16,7 @@ export class BeeRequest {
     return result;
   }
 }
+
+let t = new BeeRequest();
+
+t.useFetch("https://jsonplaceholder.typicode.com/posts");
