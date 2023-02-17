@@ -1,1 +1,1 @@
-export * from "./lib/modules/beerequest";
+export * from "./lib";
