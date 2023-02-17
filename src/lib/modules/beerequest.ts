@@ -1,12 +1,12 @@
 export class BeeRequest {
 	public async useFetch<T>(url: string, requestInit?: RequestInit): Promise<T> {
 		let result: T = await fetch(url, requestInit)
-			.then((data) => data)
-			.then((res) => {
+			.then((data: Response) => data)
+			.then((res: Response) => {
 				return res.json();
 			})
-			.catch((e) => {
-				throw e;
+			.catch((error: Error) => {
+				return error.message;
 			});
 
 		return result;
