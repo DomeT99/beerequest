@@ -1,6 +1,6 @@
 {
   "name": "http-bee-request",
-  "version": "0.6.10-beta",
+  "version": "0.6.0-beta",
   "description": "🐝A little package for HttpRequest🐝",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
