@@ -1,17 +1,27 @@
 {
   "name": "http-bee-request",
   "version": "0.6.0-beta",
-  "description": "🐝A little package for HttpRequest🐝",
+  "description": "🐝 A little package for HttpRequest",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "/dist"
   ],
+  "repository": {
+    "url": "https://github.com/DomeT99/beerequest",
+    "directory": "https://github.com/DomeT99/beerequest/tree/master/src"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch"
   },
-  "keywords": [],
+  "keywords": [
+    "http",
+    "javascript",
+    "typescript",
+    "fetch",
+    "httprequest"
+  ],
   "author": "Domenico Tenace",
   "license": "MIT",
   "dependencies": {
